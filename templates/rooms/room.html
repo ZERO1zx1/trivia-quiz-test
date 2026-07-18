@@ -1,0 +1,77 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ room.name }} - {{ app_name }}{% endblock %}
+
+{% block extra_js %}
+<script>
+window.currentUserId = {{ current_user.id }};
+window.hostId = {{ room.host_id }};
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="room-detail">
+    <div class="room-lobby">
+        <div class="room-lobby-header">
+            <h1 style="font-size:2rem;font-weight:800;">{{ room.name }}</h1>
+            <div class="room-lobby-code">
+                <span>ROOM CODE:</span>
+                <span id="roomCode">{{ room.code }}</span>
+                <button onclick="copyToClipboard('{{ room.code }}')" style="background:none;border:none;color:var(--accent);cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+            </div>
+            <div style="margin-top:16px;color:var(--text-secondary);">
+                {{ room.difficulty.title() }} • {{ room.question_count }} Questions • {{ room.time_per_question }}s per question
+            </div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:16px;margin-bottom:32px;">
+            {% if is_host %}
+            <button class="btn btn-primary btn-lg" onclick="startGame('{{ room.code }}')" id="startBtn">
+                ▶ Start Game
+            </button>
+            {% else %}
+            <button class="btn btn-success btn-lg" onclick="toggleReady('{{ room.code }}')" id="readyBtn">
+                ✓ Ready Up
+            </button>
+            {% endif %}
+            <form method="POST" action="{{ url_for('rooms.leave_room', code=room.code) }}" style="display:inline;">
+                <button type="submit" class="btn btn-ghost">Leave Room</button>
+            </form>
+        </div>
+
+        <h3 style="text-align:center;margin-bottom:16px;font-size:1.1rem;">Players ({{ players|length }}/{{ room.max_players }})</h3>
+        <div class="player-grid" id="playerList">
+            {% for p in players %}
+            <div class="player-card {% if p.is_ready %}ready{% endif %} {% if p.user_id == room.host_id %}host{% endif %}">
+                {% if p.user_id == room.host_id %}<span class="host-badge">HOST</span>{% endif %}
+                <img src="{{ p.user.avatar_url }}" alt="{{ p.user.username }}">
+                <div style="font-weight:700;">{{ p.user.username }}</div>
+                <div class="ready-indicator {% if p.is_ready %}ready{% endif %}"></div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="chat-box">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+                <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+joinRoomSocket('{{ room.code }}');
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    sendChat('{{ room.code }}', msg);
+    input.value = '';
+}
+</script>
+{% endblock %}
