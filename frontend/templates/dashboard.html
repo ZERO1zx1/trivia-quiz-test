@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriviaVerse | Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <nav class="sidebar glass-panel">
+        <div class="logo">
+            <span class="accent-text">TRIVIA</span>VERSE
+        </div>
+        <ul class="nav-links">
+            <li class="active">Dashboard</li>
+            <li>Ranked Match</li>
+            <li>Tournaments</li>
+            <li>Armory (Shop)</li>
+        </ul>
+        <div class="user-card">
+            <div class="avatar"></div>
+            <div class="user-info">
+                <h4>PlayerOne</h4>
+                <p>Lvl 42 • 🪙 1,250</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header>
+            <h1>Welcome back, <span class="accent-text">PlayerOne</span></h1>
+            <button class="btn-primary">Create Room</button>
+        </header>
+
+        <section class="grid-layout">
+            <div class="glass-card hover-lift join-room-card">
+                <h3>Join Matchmaking</h3>
+                <p>Queue up for a 1v1 Quick Match or Team Battle.</p>
+                <div class="input-group">
+                    <input type="text" placeholder="Enter Room Code">
+                    <button class="btn-accent" onclick="joinRoom()">Join</button>
+                </div>
+            </div>
+
+            <div class="glass-card leaderboard-card">
+                <h3>Live Top Players</h3>
+                <ul id="live-leaderboard">
+                    <li><span>1. Faker_Trivia</span> <span class="score">9,420 XP</span></li>
+                    <li><span>2. QuizMaster99</span> <span class="score">8,100 XP</span></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/js/socket.js"></script>
+</body>
+</html>
